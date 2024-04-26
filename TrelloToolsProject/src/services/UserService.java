@@ -33,10 +33,39 @@ public class UserService {
 	}
 	@Path("signup")
 	@POST
-	public String signUp(User user)
+	public Response signUp(User user)
 	{
-		entityManager.persist(user);
-		return  ("user registered successfully!") ;	
+		try {
+		TypedQuery<User> usernameQ=entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username",User.class);
+		usernameQ.setParameter("username", user.getUsername());
+		List<User>usernameExists=usernameQ.getResultList();
+		TypedQuery<User> emailQ=entityManager.createQuery("SELECT u FROM User u WHERE u.email=:email",User.class);
+		emailQ.setParameter("email", user.getEmail());
+		List<User>emailExists=emailQ.getResultList();
+		if(!usernameExists.isEmpty() && !emailExists.isEmpty())
+		{
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("email & username already exists").build();
+
+		}
+		else if (!usernameExists.isEmpty() || !emailExists.isEmpty())
+		{
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("email or username already exists").build();
+
+		}
+		else
+		{
+			entityManager.persist(user);
+	        return Response.status(Response.Status.OK).entity("User registered successfully!").build();
+		
+		}
+		
+		}
+		catch (Exception e)
+		{
+			 e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to register").build();
+ 
+		}
 	}
 
 }
