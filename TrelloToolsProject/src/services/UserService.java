@@ -67,5 +67,32 @@ public class UserService {
  
 		}
 	}
+	@Path("/login")
+	@POST
+	public Response login(User user)
+	{
+		try{TypedQuery<User> loginQ=entityManager.createQuery("SELECT u FROM User u WHERE u.username=:username AND u.password=:password",User.class);
+		loginQ.setParameter("username", user.getUsername());
+		loginQ.setParameter("password",user.getPassword());
+		List<User>validUsers=loginQ.getResultList();
+		if(validUsers.isEmpty())
+		{
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Invalid username or password").build();
+
+		}
+		else
+		{
+            return Response.status(Response.Status.OK).entity("Login successful").build();
+
+		}
+		}
+		catch(Exception e)
+		{
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to login").build();
+
+		}
+		
+
+	}
 
 }
