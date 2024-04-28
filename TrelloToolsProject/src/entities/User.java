@@ -3,6 +3,8 @@ package entities;
 
 import javax.ejb.Stateless;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -20,6 +22,9 @@ public class User {
 	private String email;
 	@NotNull
 	private String password;
+	@NotNull
+	private String role;
+	private String Collaborator_role;
 	public void setID(long id)
 	{
 		this.id=id;
@@ -51,6 +56,14 @@ public class User {
 	public String getPassword()
 	{
 		return password;
+	}
+	public void setRole(String role)
+	{
+		this.role=role;
+	}
+	public String getRole()
+	{
+		return role;
 	}
 
 }

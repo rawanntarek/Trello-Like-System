@@ -21,7 +21,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import entities.Collaborator;
+import entities.TeamLeader;
 import entities.User;
+
 
 
 @Stateless
@@ -42,7 +45,8 @@ public class UserService {
 	public Response signUp(User user)
 	{
 		
-		TypedQuery<User> query=entityManager.createQuery("SELECT u FROM User u WHERE   u.email=:email",User.class);
+		TypedQuery<User> query=entityManager.createQuery("SELECT u FROM User u WHERE   u.email=:email AND u.role=:role",User.class);
+		query.setParameter("role", user.getRole());
 		query.setParameter("email", user.getEmail());
 		User Existing;
 		try {
@@ -50,6 +54,30 @@ public class UserService {
 		}
 		catch(NoResultException ex)
 		{
+			if(user.getRole()=="Team Leader")
+			{
+				TeamLeader teamLeader=new TeamLeader();
+				teamLeader.setUsername(user.getUsername());
+				teamLeader.setPassword(user.getPassword());
+				teamLeader.setEmail(user.getEmail());
+				teamLeader.setRole(user.getRole());
+				entityManager.persist(teamLeader);
+	            return Response.status(Response.Status.OK).entity("Team Leader user registered successfully!").build();
+
+				
+			}
+			else if(user.getRole()=="Collaborator")
+			{
+				Collaborator collaborator=new Collaborator();
+				collaborator.setUsername(user.getUsername());
+				collaborator.setPassword(user.getPassword());
+				collaborator.setEmail(user.getEmail());
+				collaborator.setRole(user.getRole());
+				entityManager.persist(collaborator);
+	            return Response.status(Response.Status.OK).entity("Collaborator user registered successfully!").build();
+
+				
+			}
 			entityManager.persist(user);
             return Response.status(Response.Status.OK).entity("User registered successfully!").build();
 
@@ -59,30 +87,29 @@ public class UserService {
 
 		
 }
-	 
-		 
 	
 	@Path("login")
 	@POST
 	public Response login(User user)
 	{
-	    TypedQuery<User> loginQ=entityManager.createQuery("SELECT u FROM User u WHERE u.email=:email AND u.password=:password",User.class);
+	    TypedQuery<User> loginQ=entityManager.createQuery("SELECT u FROM User u WHERE u.email=:email AND u.password=:password AND u.role=:role",User.class);
 		loginQ.setParameter("email", user.getEmail());
 		loginQ.setParameter("password",user.getPassword());
+		loginQ.setParameter("role",user.getRole());
 		User Existing;
 		try {
             Existing = loginQ.getSingleResult();
         } catch (NoResultException ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
         }
-        return Response.status(Response.Status.OK).entity("Login successful").build();
+        return Response.status(Response.Status.OK).entity("Login successful with role: "+user.getRole()).build();
 
 		
 
 	}
 	 @Path("getuser")
 	    @GET
-	    public Response getUserByEmail(@QueryParam("id") Long id) {
+	    public Response getUserByID(@QueryParam("id") Long id) {
 	        
 	        User user=entityManager.find(User.class, id);
 	        if (user == null) {
@@ -106,7 +133,7 @@ public class UserService {
          return Response.status(Response.Status.OK).entity("Username updated!").build();
 
 	 }
-	 @Path("updateEmail")
+	 @Path("updateEmail") //it doesnt refuse if email already exists
 	 @PUT
 	 public Response updateEmail (@QueryParam("id") Long id,String email)
 	 {
