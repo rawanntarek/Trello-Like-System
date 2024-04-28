@@ -68,9 +68,9 @@ public class TeamLeaderService {
 
 		    }
 		    try {
-				TypedQuery<String> query = entityManager.createQuery("SELECT b.name FROM Board b WHERE b.teamLeader.id = :id", String.class);
+				TypedQuery<Board> query = entityManager.createQuery("SELECT b FROM Board b WHERE b.teamLeader.id = :id", Board.class);
 				query.setParameter("id", id);
-				List<String> boards=query.getResultList();
+				List<Board> boards=query.getResultList();
 		        return Response.status(Response.Status.OK).entity(boards).build();
 
 
