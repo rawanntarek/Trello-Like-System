@@ -2,14 +2,13 @@ package entities;
 
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
+@Entity
 public class TeamLeader extends User {
 
-	@OneToMany(mappedBy="TeamLeader")
+	@OneToMany(mappedBy="teamLeader")
 	private List<Board> boards;
-	public List<Board> getBoards()
-	{
-		return boards;
-	}
+	
 }

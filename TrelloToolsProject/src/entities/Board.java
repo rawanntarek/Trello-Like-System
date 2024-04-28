@@ -1,7 +1,6 @@
 package entities;
 
 import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,10 +17,10 @@ public class Board {
 	@ManyToOne
 	private TeamLeader teamLeader;
 	
-	@OneToMany(mappedBy="board")
+	/*@OneToMany(mappedBy="board")
 	@Size(min=3,message="at least 3 lists")
 	private List<Lists> lists;
-	
+	*/
 	public long getId()
 	{
 		return id;
@@ -34,10 +33,10 @@ public class Board {
 	{
 		return teamLeader;
 	}
-	public List<Lists> getlists()
+	/*public List<Lists> getlists()
 	{
 		return lists;
-	}
+	}*/
 	public void setID (long id)
 	{
 		this.id=id;
@@ -50,9 +49,9 @@ public class Board {
 	{
 		this.teamLeader=teamLeader;
 	}
-	public void setLists(List<Lists> lists)
+	/*public void setLists(List<Lists> lists)
 	{
 		this.lists=lists;
-	}
+	}*/
 
 }

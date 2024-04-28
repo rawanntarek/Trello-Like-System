@@ -54,7 +54,7 @@ public class UserService {
 		}
 		catch(NoResultException ex)
 		{
-			if(user.getRole()=="Team Leader")
+			if(user.getRole().equals("Team Leader"))
 			{
 				TeamLeader teamLeader=new TeamLeader();
 				teamLeader.setUsername(user.getUsername());
@@ -66,7 +66,7 @@ public class UserService {
 
 				
 			}
-			else if(user.getRole()=="Collaborator")
+			else if(user.getRole().equals("Collaborator"))
 			{
 				Collaborator collaborator=new Collaborator();
 				collaborator.setUsername(user.getUsername());

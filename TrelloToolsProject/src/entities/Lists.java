@@ -2,6 +2,7 @@ package entities;
 
 import java.util.List;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -9,6 +10,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 
+@Entity
 public class Lists {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -16,7 +18,7 @@ public class Lists {
 	private String name;
 	@ManyToOne
 	private Board board;
-	@OneToMany(mappedBy="Cards")
+	@OneToMany(mappedBy="lists")
 	@Size(min=1,message="at least 1 card")
 	private List<Card> cards;
 	
