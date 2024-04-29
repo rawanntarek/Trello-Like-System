@@ -1,5 +1,6 @@
 package services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -64,25 +65,62 @@ public class TeamLeaderService {
 	@GET
 	public Response getBoards (@QueryParam("id") long id)
 	{
-		 TeamLeader teamLeader = entityManager.find(TeamLeader.class, id);
-		    if(teamLeader==null)
+		 User useraccess = entityManager.find(User.class, id);
+		    if(useraccess==null)
 		    {
-		        return Response.status(Response.Status.NOT_FOUND).entity("Team Leader not found").build();
+		        return Response.status(Response.Status.NOT_FOUND).entity("user not found").build();
 
 		    }
-		    try {
-				TypedQuery<Board> query = entityManager.createQuery("SELECT b FROM Board b WHERE b.teamLeader.id = :id", Board.class);
-				query.setParameter("id", id);
-				List<Board> boards=query.getResultList();
-		        return Response.status(Response.Status.OK).entity(boards).build();
+		    List<Board> accessibleBoards = new ArrayList<>();
 
-
+		    // If the user is a team leader, add all boards they created
+		    if (useraccess instanceof TeamLeader) {
+		        TeamLeader teamLeader = (TeamLeader) useraccess;
+		        accessibleBoards.addAll(teamLeader.getBoards());
 		    }
-		    catch(Exception e)
-		    {
-		        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed").build();
 
+		    // If the user is a collaborator, add the board they are associated with
+		    if (useraccess.getBoard() != null) {
+		        accessibleBoards.add(useraccess.getBoard());
 		    }
+
+		    return Response.status(Response.Status.OK).entity(accessibleBoards).build();
+		}
+	
+	// Inside TeamLeaderService.java
+	@Path("invite")
+	@POST
+	public Response inviteCollaborator(@QueryParam("teamLeaderId") long teamLeaderId,@QueryParam("boardId") long boardId, @QueryParam("userId") long userId) {
+	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
+	    Board board = entityManager.find(Board.class, boardId);
+	    User userToInvite = entityManager.find(User.class, userId);
+	    
+	    if (teamLeader == null) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("team leader not found").build();
+	    }
+	    if(board==null)
+	    {
+	        return Response.status(Response.Status.NOT_FOUND).entity("board not found").build();
+
+	    }
+	    if(userToInvite==null)
+	    {
+	        return Response.status(Response.Status.NOT_FOUND).entity("user not found").build();
+	    }
+	    
+	    if (!board.getTeamLeader().equals(teamLeader)) {
+	        return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized access").build();
+	    }
+
+	    if (userToInvite.getBoard() != null && userToInvite.getBoard().equals(board)) {
+	        return Response.status(Response.Status.CONFLICT).entity("User is already a collaborator").build();
+	    }
+	    board.getCollaborators().add(userToInvite);
+	    userToInvite.setBoard(board);
+	    entityManager.merge(board);
+	    entityManager.merge(userToInvite);
+
+	    return Response.status(Response.Status.OK).entity("User invited successfully").build();
 	}
 	@Path("deleteBoard")
 	@DELETE

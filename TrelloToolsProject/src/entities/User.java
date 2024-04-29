@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 @Stateless
@@ -24,7 +25,8 @@ public class User {
 	private String password;
 	@NotNull
 	private String role;
-	private String Collaborator_role;
+	@ManyToOne
+	private Board board;
 	public void setID(long id)
 	{
 		this.id=id;
@@ -65,5 +67,13 @@ public class User {
 	{
 		return role;
 	}
+	public Board getBoard()
+	{
+		return board;
+	}
 
+	public void setBoard(Board board)
+	{
+		this.board=board;
+	}
 }

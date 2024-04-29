@@ -16,10 +16,16 @@ public class Card {
 	@ManyToOne
 	private Lists lists;
 
+	private String name;
+
 	
 	public long getId()
 	{
 		return id;
+	}
+	public String getname()
+	{
+		return name;
 	}
 	public String getdescription()
 	{
@@ -49,5 +55,7 @@ public class Card {
 	{
 		this.lists=lists;
 	}
+
+	public void setName(String name) {this.name=name;}
 
 }

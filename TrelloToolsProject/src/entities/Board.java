@@ -1,5 +1,6 @@
 package entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,9 @@ public class Board {
 	private String name;
 	@ManyToOne
 	private TeamLeader teamLeader;
+	@Transient
+	@OneToMany(mappedBy = "board")
+	private List<User> collaborators = new ArrayList<>();
 	@Transient
 	@OneToMany(mappedBy="board")
 	@Size(min=3,message="at least 3 lists")
@@ -37,6 +41,10 @@ public class Board {
 	public List<Lists> getlists()
 	{
 		return lists;
+	}
+	public List<User> getCollaborators()
+	{
+		return collaborators;
 	}
 	public void setID (long id)
 	{
