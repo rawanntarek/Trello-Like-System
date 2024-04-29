@@ -21,7 +21,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import DTOs.UserDTO;
 import entities.Collaborator;
 import entities.TeamLeader;
 import entities.User;
@@ -43,7 +42,7 @@ public class UserService {
 	 
 	@Path("signup")
 	@POST
-	public Response signUp(UserDTO user)
+	public Response signUp(User user)
 	{
 		
 		TypedQuery<User> query=entityManager.createQuery("SELECT u FROM User u WHERE   u.email=:email AND u.role=:role",User.class);
@@ -91,7 +90,7 @@ public class UserService {
 	
 	@Path("login")
 	@POST
-	public Response login(UserDTO user)
+	public Response login(User user)
 	{
 	    TypedQuery<User> loginQ=entityManager.createQuery("SELECT u FROM User u WHERE u.email=:email AND u.password=:password AND u.role=:role",User.class);
 		loginQ.setParameter("email", user.getEmail());
