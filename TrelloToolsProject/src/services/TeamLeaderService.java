@@ -7,7 +7,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import entities.Board;
+import entities.Lists;
 import entities.TeamLeader;
 import entities.User;
 
@@ -81,7 +84,69 @@ public class TeamLeaderService {
 
 		    }
 	}
-	
- 
+	@Path("deleteBoard")
+	@DELETE
+	public Response deleteBoard(@QueryParam("teamLeaderId") long teamLeaderId,@QueryParam("BoardId") long BoardId) {
+	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
+	    Board board = entityManager.find(Board.class, BoardId);
+	    
+	    if (teamLeader == null) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Team Leader not found").build();
+	    }
+	    
+	    if (board == null || !board.getTeamLeader().equals(teamLeader)) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Board not found or unauthorized access").build();
+	    }
+	    
+	    entityManager.remove(board);
+	    
+	    return Response.status(Response.Status.OK).entity("Board deleted successfully!").build();
+	}
+
+
+	@Path("createList")
+	@POST
+	public Response createList(@QueryParam("teamLeaderId") long teamLeaderId,
+	                           @QueryParam("boardId") long boardId,
+	                           @QueryParam("listName") String listName) {
+	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
+	    Board board = entityManager.find(Board.class, boardId);
+	    
+	    if (teamLeader == null) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Team Leader not found").build();
+	    }
+	    
+	    if (board == null || !board.getTeamLeader().equals(teamLeader)) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Board not found or unauthorized access").build();
+	    }
+
+	    Lists newList = new Lists();
+	    newList.setListName(listName);
+	    newList.setBoard(board);
+
+	    entityManager.persist(newList);
+	    
+	    return Response.status(Response.Status.CREATED).entity("List created successfully within the board!").build();
+	}
+
+	@Path("deleteList")
+	@DELETE
+	public Response deleteList(@QueryParam("teamLeaderId") long teamLeaderId,
+	                           @QueryParam("listId") long listId) {
+	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
+	    Lists list = entityManager.find(Lists.class, listId);
+	    
+	    if (teamLeader == null) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Team Leader not found").build();
+	    }
+	    
+	    if (list == null || !list.getBoard().getTeamLeader().equals(teamLeader)) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("List not found or unauthorized access").build();
+	    }
+	    
+	    entityManager.remove(list);
+	    
+	    return Response.status(Response.Status.OK).entity("List deleted successfully!").build();
+	}
 
 }

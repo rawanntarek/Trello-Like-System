@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 @Entity
 public class Board {
@@ -16,11 +17,11 @@ public class Board {
 	private String name;
 	@ManyToOne
 	private TeamLeader teamLeader;
-	
-	/*@OneToMany(mappedBy="board")
+	@Transient
+	@OneToMany(mappedBy="board")
 	@Size(min=3,message="at least 3 lists")
 	private List<Lists> lists;
-	*/
+	
 	public long getId()
 	{
 		return id;
@@ -33,10 +34,10 @@ public class Board {
 	{
 		return teamLeader;
 	}
-	/*public List<Lists> getlists()
+	public List<Lists> getlists()
 	{
 		return lists;
-	}*/
+	}
 	public void setID (long id)
 	{
 		this.id=id;
@@ -49,9 +50,8 @@ public class Board {
 	{
 		this.teamLeader=teamLeader;
 	}
-	/*public void setLists(List<Lists> lists)
+	public void setLists(List<Lists> lists)
 	{
 		this.lists=lists;
-	}*/
-
+	}
 }

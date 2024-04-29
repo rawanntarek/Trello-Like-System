@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -34,6 +35,17 @@ public class Lists {
 	{
 		return board;
 	}
-	
+	public void setListName(String name)
+	{
+		this.name=name;
+	}
+	public void setBoard(Board board)
+	{
+		this.board=board;
+	}
+	public void setCards(List<Card> cards)
+	{
+		this.cards=cards;
+	}
 
 }
