@@ -20,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import entities.Board;
+import entities.Collaborator;
 import entities.Lists;
 import entities.TeamLeader;
 import entities.User;
@@ -75,13 +76,15 @@ public class TeamLeaderService {
 
 		    // If the user is a team leader, add all boards they created
 		    if (useraccess instanceof TeamLeader) {
-		        TeamLeader teamLeader = (TeamLeader) useraccess;
-		        accessibleBoards.addAll(teamLeader.getBoards());
-		    }
-
-		    // If the user is a collaborator, add the board they are associated with
-		    if (useraccess.getBoard() != null) {
-		        accessibleBoards.add(useraccess.getBoard());
+		    	TeamLeader teamLeader = (TeamLeader) useraccess;
+		        TypedQuery<Board> query = entityManager.createQuery("SELECT b FROM Board b WHERE b.teamLeader.id = :id", Board.class);
+		        query.setParameter("id", teamLeader.getId());
+		        List<Board> teamLeaderBoards = query.getResultList();
+		        accessibleBoards.addAll(teamLeaderBoards);		  	    }
+		    if (useraccess instanceof Collaborator) {
+		        Collaborator collaborator = (Collaborator) useraccess;
+		        List<Board> collaboratorBoards = collaborator.getBoards();
+		        accessibleBoards.addAll(collaboratorBoards);
 		    }
 
 		    return Response.status(Response.Status.OK).entity(accessibleBoards).build();
@@ -93,7 +96,7 @@ public class TeamLeaderService {
 	public Response inviteCollaborator(@QueryParam("teamLeaderId") long teamLeaderId,@QueryParam("boardId") long boardId, @QueryParam("userId") long userId) {
 	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
 	    Board board = entityManager.find(Board.class, boardId);
-	    User userToInvite = entityManager.find(User.class, userId);
+	    Collaborator userToInvite = entityManager.find(Collaborator.class, userId);
 	    
 	    if (teamLeader == null) {
 	        return Response.status(Response.Status.NOT_FOUND).entity("team leader not found").build();
@@ -112,11 +115,11 @@ public class TeamLeaderService {
 	        return Response.status(Response.Status.UNAUTHORIZED).entity("Unauthorized access").build();
 	    }
 
-	    if (userToInvite.getBoard() != null && userToInvite.getBoard().equals(board)) {
+	    if (userToInvite.getBoards() != null && userToInvite.getBoards().contains(board)) {
 	        return Response.status(Response.Status.CONFLICT).entity("User is already a collaborator").build();
 	    }
 	    board.getCollaborators().add(userToInvite);
-	    userToInvite.setBoard(board);
+	    userToInvite.getBoards().add(board);
 	    entityManager.merge(board);
 	    entityManager.merge(userToInvite);
 

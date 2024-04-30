@@ -1,6 +1,8 @@
 package entities;
 
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -8,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
@@ -25,8 +28,7 @@ public class User {
 	private String password;
 	@NotNull
 	private String role;
-	@ManyToOne
-	private Board board;
+
 	public void setID(long id)
 	{
 		this.id=id;
@@ -67,13 +69,5 @@ public class User {
 	{
 		return role;
 	}
-	public Board getBoard()
-	{
-		return board;
-	}
-
-	public void setBoard(Board board)
-	{
-		this.board=board;
-	}
+	
 }

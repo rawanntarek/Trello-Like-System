@@ -3,10 +3,14 @@ package entities;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -19,8 +23,8 @@ public class Board {
 	@ManyToOne
 	private TeamLeader teamLeader;
 	@Transient
-	@OneToMany(mappedBy = "board")
-	private List<User> collaborators = new ArrayList<>();
+	@ManyToMany(fetch=FetchType.EAGER)
+	private List<Collaborator> collaborators = new ArrayList<Collaborator>();
 	@Transient
 	@OneToMany(mappedBy="board")
 	@Size(min=3,message="at least 3 lists")
@@ -42,7 +46,7 @@ public class Board {
 	{
 		return lists;
 	}
-	public List<User> getCollaborators()
+	public List<Collaborator> getCollaborators()
 	{
 		return collaborators;
 	}
