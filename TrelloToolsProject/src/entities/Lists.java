@@ -20,7 +20,6 @@ public class Lists {
 	@ManyToOne
 	private Board board;
 	@OneToMany(mappedBy="lists")
-	@Size(min=1,message="at least 1 card")
 	private List<Card> cards;
 	
 	public long getId()

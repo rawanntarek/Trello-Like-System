@@ -53,6 +53,7 @@ public class TeamLeaderService {
 		    	
 		 		board.setBoardName(boardName);
 		 		board.setTeamLeader(teamLeader);
+		 		board.setLists(null);
 		 		entityManager.persist(board);
 		        return Response.status(Response.Status.OK).entity("Board Created successfully!").build();
 
@@ -88,8 +89,8 @@ public class TeamLeaderService {
 
 		    return Response.status(Response.Status.OK).entity(accessibleBoards).build();
 		}
+	 
 	
-	// Inside TeamLeaderService.java
 	@Path("invite")
 	@POST
 	public Response inviteCollaborator(@QueryParam("teamLeaderId") long teamLeaderId,@QueryParam("boardId") long boardId, @QueryParam("userId") long userId) {
@@ -163,6 +164,8 @@ public class TeamLeaderService {
 	    Lists newList = new Lists();
 	    newList.setListName(listName);
 	    newList.setBoard(board);
+	    board.getlists().add(newList);
+	    board.setLists(board.getlists());
 
 	    entityManager.persist(newList);
 	    

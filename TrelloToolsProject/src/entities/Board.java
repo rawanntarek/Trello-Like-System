@@ -26,9 +26,8 @@ public class Board {
 	@ManyToMany(fetch=FetchType.EAGER)
 	private List<Collaborator> collaborators = new ArrayList<Collaborator>();
 	@Transient
-	@OneToMany(mappedBy="board")
-	@Size(min=3,message="at least 3 lists")
-	private List<Lists> lists;
+	@OneToMany(fetch=FetchType.EAGER,mappedBy="board")
+	private List<Lists> lists= new ArrayList<Lists>();
 	
 	public long getId()
 	{
@@ -41,6 +40,7 @@ public class Board {
 	public TeamLeader getTeamLeader()
 	{
 		return teamLeader;
+		
 	}
 	public List<Lists> getlists()
 	{
