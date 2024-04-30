@@ -14,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -58,6 +59,49 @@ public class CollaboratorService {
 
         }
     }
+    @Path("addDetailsToCard")
+    @POST
+    public Response addDetailsToCard(@QueryParam("cardId") long cardId,
+                                     @QueryParam("description") String description,
+                                     @QueryParam("commentText") String commentText,
+                                     @QueryParam("status") String status,
+                                     @QueryParam("userId") long userId) {
+        // Fetch the card
+        Card card = entityManager.find(Card.class, cardId);
+
+        // Validate that the card exists
+        if (card == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Card not found").build();
+        }
+
+        Lists list = card.getlists();
+        if (!isAuthorized(userId, list)) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("User not authorized to update card").build();
+        }
+
+        // Add description if provided
+        if (description != null && !description.isEmpty()) {
+            card.setdescription(description);
+        }
+
+        // Add comment if provided
+        if (commentText != null && !commentText.isEmpty()) {
+            card.setcomments(commentText);
+        }
+
+        // Update status if provided
+        if (status != null && !status.isEmpty()) {
+            card.setStatus(status);
+        }
+
+        // Persist the changes
+        entityManager.merge(card);
+
+        return Response.status(Response.Status.OK)
+                .entity("Details added to card successfully!")
+                .build();
+    }
+
     @Path("moveCard")
     @POST
     public Response moveCard(@QueryParam("cardId") long cardId,
@@ -95,10 +139,11 @@ public class CollaboratorService {
         }
     }
     @Path("updateCard")
-    @POST
+    @PUT
     public Response updateCard(@QueryParam("cardId") long cardId,
                                @QueryParam("description") String description,
                                @QueryParam("commentText") String commentText,
+                               @QueryParam("status") String status,
                                @QueryParam("userId") long userId) {
         // Fetch the card
         Card card = entityManager.find(Card.class, cardId);
@@ -110,7 +155,7 @@ public class CollaboratorService {
 
         Lists list=card.getlists();
         if (!isAuthorized(userId, list)) {
-            return Response.status(Response.Status.UNAUTHORIZED).entity("User not authorized to create card").build();
+            return Response.status(Response.Status.UNAUTHORIZED).entity("User not authorized to update card").build();
         }
         // Flag to check if updates are performed
         boolean updated = false;
@@ -127,6 +172,12 @@ public class CollaboratorService {
             updated = true;
         }
 
+        // Update the card's status if provided
+        if (status != null && !status.isEmpty()) {
+            card.setStatus(status);
+            updated = true;
+        }
+
         // Persist the card if any updates were made
         if (updated) {
             entityManager.merge(card);
@@ -136,6 +187,7 @@ public class CollaboratorService {
                 .entity("Card updated successfully!")
                 .build();
     }
+
     private boolean isAuthorized(long userId, Lists list) {
         User user = entityManager.find(User.class, userId);
         if (user instanceof TeamLeader) {
@@ -149,6 +201,49 @@ public class CollaboratorService {
             return collaborator.getBoards().contains(list.getBoard());
         }
         return false;
+    }
+    @Path("assignCard")
+    @POST
+    public Response assignCard(@QueryParam("cardId") long cardId, 
+                               @QueryParam("userId") long userId, 
+                               @QueryParam("assigneeId") long assigneeId) {
+        // Fetch the card, user, and assignee
+        Card card = entityManager.find(Card.class, cardId);
+        User user = entityManager.find(User.class, userId);
+        Collaborator assignee = entityManager.find(Collaborator.class, assigneeId);
+
+        // Validate that the card, user, and assignee exist
+        if (card == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Card not found").build();
+        }
+        if (user == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
+        }
+        if (assignee == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Assignee not found").build();
+        }
+
+        // Ensure the user is authorized to assign the card
+        Lists list = card.getlists();
+        if (!isAuthorized(userId, list)) {
+            return Response.status(Response.Status.UNAUTHORIZED).entity("User not authorized to assign card").build();
+        }
+
+        // Ensure the assignee is part of the same board as the card
+        Board board = list.getBoard();
+        if (! assignee.getBoards().contains(board)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Assignee is not part of the board").build();
+        }
+
+        // Assign the card to the specified assignee
+        card.setAssignee(assignee);
+
+        // Persist the changes
+        entityManager.merge(card);
+
+        return Response.status(Response.Status.OK)
+                .entity("Card assigned successfully to the specified assignee!")
+                .build();
     }
 
 

@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 @Entity
 public class Card {
@@ -17,6 +18,11 @@ public class Card {
 	private Lists lists;
 
 	private String name;
+	@ManyToOne
+	@JoinColumn(name = "assignee_id")
+	private User assignee;
+	
+	private String status;
 
 	
 	public long getId()
@@ -57,5 +63,22 @@ public class Card {
 	}
 
 	public void setName(String name) {this.name=name;}
+	public User getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(User assignee) {
+		this.assignee = assignee;
+	}
+	public String getStatus()
+	{
+		return status;
+	}
+	public void setStatus(String status)
+	{
+		this.status=status;
+	}
+	
+
 
 }

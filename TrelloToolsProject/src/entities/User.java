@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 @Stateless
@@ -28,7 +29,8 @@ public class User {
 	private String password;
 	@NotNull
 	private String role;
-
+	@OneToMany(mappedBy = "assignee")
+	private List<Card> assignedCards;
 	public void setID(long id)
 	{
 		this.id=id;

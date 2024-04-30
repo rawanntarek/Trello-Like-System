@@ -33,11 +33,19 @@ public class TeamLeaderService {
 	@PersistenceContext(unitName="pu")
 	private EntityManager entityManager;
 	
+	//unique name
 	@Path("createBoard")
 	@POST
 	public Response createBoard(@QueryParam("id")long id,@QueryParam("board name") String boardName)
 	{
-		 TeamLeader teamLeader = entityManager.find(TeamLeader.class, id);
+		
+			User user=entityManager.find(User.class, id);
+			if(user==null|| !user.getRole().equals("Team Leader"))
+			{
+		        return Response.status(Response.Status.FORBIDDEN).entity("User is not authorized to create a board").build();
+
+			}
+			TeamLeader teamLeader = entityManager.find(TeamLeader.class, id);
 		    if(teamLeader==null)
 		    {
 		        return Response.status(Response.Status.NOT_FOUND).entity("Team Leader not found").build();
@@ -94,6 +102,13 @@ public class TeamLeaderService {
 	@Path("invite")
 	@POST
 	public Response inviteCollaborator(@QueryParam("teamLeaderId") long teamLeaderId,@QueryParam("boardId") long boardId, @QueryParam("userId") long userId) {
+
+		User user=entityManager.find(User.class, teamLeaderId);
+		if(user==null|| !user.getRole().equals("Team Leader"))
+		{
+	        return Response.status(Response.Status.FORBIDDEN).entity("User is not authorized to invite a collaborator").build();
+
+		}
 	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
 	    Board board = entityManager.find(Board.class, boardId);
 	    Collaborator userToInvite = entityManager.find(Collaborator.class, userId);
@@ -128,6 +143,12 @@ public class TeamLeaderService {
 	@Path("deleteBoard")
 	@DELETE
 	public Response deleteBoard(@QueryParam("teamLeaderId") long teamLeaderId,@QueryParam("BoardId") long BoardId) {
+		User user=entityManager.find(User.class, teamLeaderId);
+		if(user==null|| !user.getRole().equals("Team Leader"))
+		{
+	        return Response.status(Response.Status.FORBIDDEN).entity("User is not authorized to delete a board").build();
+
+		}
 	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
 	    Board board = entityManager.find(Board.class, BoardId);
 	    
@@ -150,6 +171,12 @@ public class TeamLeaderService {
 	public Response createList(@QueryParam("teamLeaderId") long teamLeaderId,
 	                           @QueryParam("boardId") long boardId,
 	                           @QueryParam("listName") String listName) {
+		User user=entityManager.find(User.class, teamLeaderId);
+		if(user==null|| !user.getRole().equals("Team Leader"))
+		{
+	        return Response.status(Response.Status.FORBIDDEN).entity("User is not authorized to create a list").build();
+
+		}
 	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
 	    Board board = entityManager.find(Board.class, boardId);
 	    
@@ -176,6 +203,12 @@ public class TeamLeaderService {
 	@DELETE
 	public Response deleteList(@QueryParam("teamLeaderId") long teamLeaderId,
 	                           @QueryParam("listId") long listId) {
+		User user=entityManager.find(User.class, teamLeaderId);
+		if(user==null|| !user.getRole().equals("Team Leader"))
+		{
+	        return Response.status(Response.Status.FORBIDDEN).entity("User is not authorized to delete a list").build();
+
+		}
 	    TeamLeader teamLeader = entityManager.find(TeamLeader.class, teamLeaderId);
 	    Lists list = entityManager.find(Lists.class, listId);
 	    
