@@ -74,7 +74,6 @@ public class TeamLeaderService {
 		    }
 		    List<Board> accessibleBoards = new ArrayList<>();
 
-		    // If the user is a team leader, add all boards they created
 		    if (useraccess instanceof TeamLeader) {
 		    	TeamLeader teamLeader = (TeamLeader) useraccess;
 		        TypedQuery<Board> query = entityManager.createQuery("SELECT b FROM Board b WHERE b.teamLeader.id = :id", Board.class);
