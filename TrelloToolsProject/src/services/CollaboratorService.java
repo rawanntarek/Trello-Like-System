@@ -6,9 +6,11 @@ import entities.Collaborator;
 import entities.Lists;
 import entities.TeamLeader;
 import entities.User;
+import jms.JMSClient;
 
 import javax.ejb.PostActivate;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -31,6 +33,8 @@ public class CollaboratorService {
     @PersistenceContext(unitName = "pu")
     private EntityManager entityManager;
 
+    @Inject
+    JMSClient jmsClient;
     @Path("createCard")
     @POST
     public Response createCard(@QueryParam("listId") long ListId,
@@ -86,7 +90,9 @@ public class CollaboratorService {
 
         // Add comment if provided
         if (commentText != null && !commentText.isEmpty()) {
-            card.setcomments(commentText);
+            card.addComment(commentText);
+            String message = "New comment on card " + cardId + ": " + commentText;
+            jmsClient.sendMessage(message);
         }
 
         // Update status if provided
@@ -144,7 +150,9 @@ public class CollaboratorService {
                                @QueryParam("description") String description,
                                @QueryParam("commentText") String commentText,
                                @QueryParam("status") String status,
-                               @QueryParam("userId") long userId) {
+                               @QueryParam("userId") long userId, 
+                               @QueryParam("commentIndex") int commentindex) {
+    	
         // Fetch the card
         Card card = entityManager.find(Card.class, cardId);
 
@@ -164,25 +172,29 @@ public class CollaboratorService {
         if (description != null && !description.isEmpty()) {
             card.setdescription(description);
             updated = true;
+            String message = "Description updated on card " + cardId + ": " + description;
+            jmsClient.sendMessage(message);
         }
 
         // Add a new comment to the card if provided
         if (commentText != null && !commentText.isEmpty()) {
-            card.setcomments(commentText);
-            updated = true;
+        	
+           
         }
 
         // Update the card's status if provided
         if (status != null && !status.isEmpty()) {
             card.setStatus(status);
             updated = true;
+            String message = "card status updated on card " + cardId + ": " + status;
+            jmsClient.sendMessage(message);
         }
 
         // Persist the card if any updates were made
         if (updated) {
             entityManager.merge(card);
         }
-
+        
         return Response.status(Response.Status.OK)
                 .entity("Card updated successfully!")
                 .build();
