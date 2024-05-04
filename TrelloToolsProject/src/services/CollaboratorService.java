@@ -52,8 +52,9 @@ public class CollaboratorService {
 
             Card newcard = new Card();
             newcard.setName(cardName);
-            newcard.setLists(list);;
-
+            newcard.setLists(list);
+            list.getcards().add(newcard);
+            list.setCards(list.getcards());
             //persist the card
             entityManager.persist(newcard);
 
@@ -179,7 +180,12 @@ public class CollaboratorService {
         // Add a new comment to the card if provided
         if (commentText != null && !commentText.isEmpty()) {
         	
-           
+        	 if (commentindex >= 0 && commentindex < card.getcomments().size()) {
+     	        String message = "Comment updated on card " + cardId +" from "+card.getcomments().get(commentindex)+ " to: " + commentText;
+        	        card.getcomments().set(commentindex, commentText);
+        	        jmsClient.sendMessage(message);
+        	    }
+        	 updated=true;
         }
 
         // Update the card's status if provided

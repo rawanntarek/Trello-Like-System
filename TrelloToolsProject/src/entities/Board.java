@@ -28,7 +28,8 @@ public class Board {
 	@Transient
 	@OneToMany(fetch=FetchType.EAGER,mappedBy="board")
 	private List<Lists> lists= new ArrayList<Lists>();
-	
+	@OneToMany(mappedBy="board" ,fetch = FetchType.LAZY)
+	private List<Sprint> sprint;
 	public long getId()
 	{
 		return id;

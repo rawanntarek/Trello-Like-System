@@ -1,8 +1,11 @@
 package services;
 
+import java.util.List;
+
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import entities.Board;
 import entities.Card;
 
 @Stateless
@@ -45,6 +49,21 @@ public class CardService {
 	            .entity(cardDetails)
 	            .build();
 	}
+	@Path("cards")
+	  @GET
+	    public Response getCardsInBoard(@QueryParam("boardId") long boardId) {
+	        Board board = entityManager.find(Board.class, boardId);
+	        if (board == null) {
+	            return Response.status(Response.Status.NOT_FOUND).entity("Board not found").build();
+	        }
+
+	        TypedQuery<String> query = entityManager.createQuery(
+	            "SELECT c.name FROM Card c WHERE c.lists.board.id = :boardId", String.class);
+	        query.setParameter("boardId", boardId);
+	        List<String> cards = query.getResultList();
+
+	        return Response.status(Response.Status.OK).entity(cards).build();
+	    }
 
 	
 

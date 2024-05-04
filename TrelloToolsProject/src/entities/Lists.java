@@ -46,5 +46,9 @@ public class Lists {
 	{
 		this.cards=cards;
 	}
+	public List<Card> getcards()
+	{
+		return cards;
+	}
 
 }

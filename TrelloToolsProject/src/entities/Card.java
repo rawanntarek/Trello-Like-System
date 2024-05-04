@@ -2,9 +2,11 @@ package entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +21,8 @@ public class Card {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	private String description;
-	private List<String>comments=new ArrayList<String>();
+	@ElementCollection(targetClass=String.class , fetch = FetchType.LAZY)
+	private List<String>comments=new ArrayList<>();
 	@ManyToOne
 	private Lists lists;
 
@@ -27,6 +30,9 @@ public class Card {
 	@ManyToOne
 	@JoinColumn(name = "assignee_id")
 	private User assignee;
+	
+	@ManyToOne
+	private Sprint sprint;
 	
 	private String status;
 
@@ -91,7 +97,13 @@ public class Card {
 	{
 		this.status=status;
 	}
-	
+	public void setSprint(Sprint sprint) {
+		this.sprint = sprint;
+	}
+	public Sprint getSprint()
+	{
+		return sprint;
+	}
 
 
 }

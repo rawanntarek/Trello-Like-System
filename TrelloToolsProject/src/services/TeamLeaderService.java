@@ -1,5 +1,6 @@
 package services;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,8 +21,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import entities.Board;
+import entities.Card;
 import entities.Collaborator;
 import entities.Lists;
+import entities.Sprint;
 import entities.TeamLeader;
 import entities.User;
 
@@ -70,6 +73,47 @@ public class TeamLeaderService {
 
 		   
 		
+	}
+	@Path("createSprint")
+	@POST
+	public Response createSprint(@QueryParam("id")long id,@QueryParam("sprint name") String sprintName,@QueryParam("start date") Date startDate,@QueryParam("end date")Date endDate,@QueryParam("BoardId") long boardId)
+	{
+		TeamLeader teamLeader = entityManager.find(TeamLeader.class, id);
+	    if(teamLeader==null)
+	    {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Team Leader not found").build();
+
+	    }
+	    Board board = entityManager.find(Board.class, boardId);
+	    if (board == null) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Board not found").build();
+	    }
+	    Sprint newSprint= new Sprint();
+	    newSprint.setName(sprintName);
+	    newSprint.setStartDate(startDate);
+	    newSprint.setEndDate(endDate);
+	    newSprint.setBoard(board);
+	    TypedQuery<Card> query = entityManager.createQuery(
+	            "SELECT c FROM Card c WHERE c.lists.board.id = :boardId", Card.class);
+	    query.setParameter("boardId", boardId);
+	    List<Card> cards = query.getResultList();
+
+	    newSprint.setCards(cards);
+
+	    entityManager.persist(newSprint);
+
+	    TypedQuery<String> querynames = entityManager.createQuery(
+	            "SELECT c.name FROM Card c WHERE c.lists.board.id = :boardId", String.class);
+
+	        querynames.setParameter("boardId",boardId); // Assuming sprint has a board
+
+	        List<String> cardsnames= querynames.getResultList();
+	    
+	    	 return Response.status(Response.Status.OK)
+	 	            .entity("Sprint created with cards: " + cardsnames)
+	 	            .build();	  
+	    
+	     
 	}
 	@Path("getBoards")
 	@GET
