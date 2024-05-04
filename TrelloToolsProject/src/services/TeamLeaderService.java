@@ -99,6 +99,10 @@ public class TeamLeaderService {
 	    List<Card> cards = query.getResultList();
 
 	    newSprint.setCards(cards);
+	    for(int i=0;i<cards.size();i++)
+	    {
+	    	cards.get(i).setSprint(newSprint);
+	    }
 
 	    entityManager.persist(newSprint);
 

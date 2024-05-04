@@ -1,5 +1,6 @@
 package entities;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
@@ -12,20 +13,22 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 @Entity
-public class Board {
+@Table(name = "board_table")
+public class Board implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	private String name;
 	@ManyToOne
 	private TeamLeader teamLeader;
-	@Transient
+
 	@ManyToMany(fetch=FetchType.EAGER)
 	private List<Collaborator> collaborators = new ArrayList<Collaborator>();
-	@Transient
+
 	@OneToMany(fetch=FetchType.EAGER,mappedBy="board")
 	private List<Lists> lists= new ArrayList<Lists>();
 	@OneToMany(mappedBy="board" ,fetch = FetchType.LAZY)

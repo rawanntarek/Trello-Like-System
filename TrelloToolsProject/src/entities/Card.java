@@ -13,8 +13,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "card_table")
 public class Card {
 
 	@Id
@@ -24,6 +26,7 @@ public class Card {
 	@ElementCollection(targetClass=String.class , fetch = FetchType.LAZY)
 	private List<String>comments=new ArrayList<>();
 	@ManyToOne
+	@JoinColumn(name = "lists_id")
 	private Lists lists;
 
 	private String name;
@@ -32,9 +35,11 @@ public class Card {
 	private User assignee;
 	
 	@ManyToOne
+	@JoinColumn(name = "sprint_id")
 	private Sprint sprint;
 	
 	private String status;
+	 private int storyPoints;
 
 	
 	public long getId()
@@ -103,6 +108,12 @@ public class Card {
 	public Sprint getSprint()
 	{
 		return sprint;
+	}
+	public int getStoryPoints() {
+		return storyPoints;
+	}
+	public void setStoryPoints(int storyPoints) {
+		this.storyPoints = storyPoints;
 	}
 
 

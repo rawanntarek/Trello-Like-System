@@ -44,6 +44,14 @@ public class UserService {
 	@POST
 	public Response signUp(User user)
 	{
+		 if (!isValidEmail(user.getEmail())) {
+		        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid email format").build();
+		    }
+
+		    // Check if password is valid
+		    if (!isValidPassword(user.getPassword())) {
+		        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid password format").build();
+		    }
 		
 		TypedQuery<User> query=entityManager.createQuery("SELECT u FROM User u WHERE   u.email=:email AND u.role=:role",User.class);
 		query.setParameter("role", user.getRole());
@@ -120,7 +128,7 @@ public class UserService {
 	    }
 	 @Path("updateUsername")
 	 @PUT
-	 public Response updateUsername (@QueryParam("id") Long id,String username)
+	 public Response updateUsername (@QueryParam("id") Long id,@QueryParam("username") String username)
 	 {
 		 User user=entityManager.find(User.class, id);
 		 if(user==null)
@@ -133,24 +141,24 @@ public class UserService {
          return Response.status(Response.Status.OK).entity("Username updated!").build();
 
 	 }
-	 @Path("updateEmail") //it doesnt refuse if email already exists
+	 
+	 @Path("updateemail")
 	 @PUT
-	 public Response updateEmail (@QueryParam("id") Long id,String email)
-	 {
-		 User user=entityManager.find(User.class, id);
-		 if(user==null)
-		 {
-	            return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
+	 public Response updateEmail(@QueryParam("id") Long id, @QueryParam("newEmail") String newEmail) {
+	     User user = entityManager.find(User.class, id);
+	     if (user == null) {
+	         return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
+	     }
 
-		 }
-		 user.setEmail(email);
-		 entityManager.merge(user);
-         return Response.status(Response.Status.OK).entity("Email updated!,Sign up again to verify").build();
+	     user.setEmail(newEmail);
+	     entityManager.merge(user);
 
+	     return Response.status(Response.Status.OK).entity("Email updated successfully").build();
 	 }
+
 	 @Path("updatePassword")
 	 @PUT
-	 public Response updatePassword (@QueryParam("id") Long id,String password)
+	 public Response updatePassword (@QueryParam("id") Long id,@QueryParam("password") String password)
 	 {
 		 User user=entityManager.find(User.class, id);
 		 if(user==null)
@@ -163,7 +171,18 @@ public class UserService {
          return Response.status(Response.Status.OK).entity("Password updated!").build();
 
 	 }
-	 
+	 private boolean isValidEmail(String email) {
+		    // Email validation regex pattern
+		    String emailPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+		    return email.matches(emailPattern);
+		}
+
+		private boolean isValidPassword(String password) {
+		    // Password validation regex pattern (at least 8 characters including at least one uppercase letter, one lowercase letter, one digit, and one special character)
+		    String passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+		    return password.matches(passwordPattern);
+		}
+
 	 
 
 	

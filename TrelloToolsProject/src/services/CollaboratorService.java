@@ -39,6 +39,7 @@ public class CollaboratorService {
     @POST
     public Response createCard(@QueryParam("listId") long ListId,
                                @QueryParam("cardName") String cardName,
+                               @QueryParam("storyPoints") int storyPoints,
                                @QueryParam("userId") long userId) {
         // Find the list based on the list ID
         Lists list = entityManager.find(Lists.class, ListId);
@@ -54,6 +55,7 @@ public class CollaboratorService {
             newcard.setName(cardName);
             newcard.setLists(list);
             list.getcards().add(newcard);
+            newcard.setStoryPoints(storyPoints); 
             list.setCards(list.getcards());
             //persist the card
             entityManager.persist(newcard);
