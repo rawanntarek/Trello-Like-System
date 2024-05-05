@@ -26,9 +26,10 @@ public class Board implements Serializable{
 	@ManyToOne
 	private TeamLeader teamLeader;
 
+	@Transient
 	@ManyToMany(fetch=FetchType.EAGER)
 	private List<Collaborator> collaborators = new ArrayList<Collaborator>();
-
+	@Transient
 	@OneToMany(fetch=FetchType.EAGER,mappedBy="board")
 	private List<Lists> lists= new ArrayList<Lists>();
 	@OneToMany(mappedBy="board" ,fetch = FetchType.LAZY)
