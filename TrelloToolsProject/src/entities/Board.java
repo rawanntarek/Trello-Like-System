@@ -13,6 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -27,9 +28,11 @@ public class Board implements Serializable{
 	private TeamLeader teamLeader;
 
 	@Transient
+	@OrderColumn(name="collaborators")
 	@ManyToMany(fetch=FetchType.EAGER)
 	private List<Collaborator> collaborators = new ArrayList<Collaborator>();
 	@Transient
+	@OrderColumn(name="lists")
 	@OneToMany(fetch=FetchType.EAGER,mappedBy="board")
 	private List<Lists> lists= new ArrayList<Lists>();
 	@OneToMany(mappedBy="board" ,fetch = FetchType.LAZY)

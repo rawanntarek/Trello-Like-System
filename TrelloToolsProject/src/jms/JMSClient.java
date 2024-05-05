@@ -5,6 +5,8 @@ package jms;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,8 +19,8 @@ import javax.jms.TextMessage;
 
 import entities.User;
 
-@Named
-@ApplicationScoped
+@Startup
+@Singleton
 public class JMSClient {
 	
 	
@@ -42,12 +44,12 @@ public class JMSClient {
 		
 	}
 
-	public String getMessage(String msg)
+	public String getMessage()
 	{
 		JMSConsumer consumer = context.createConsumer((Destination) MyTrelloQueue);
 
 		try{
-		TextMessage message = (TextMessage)consumer.receiveNoWait();
+		TextMessage message = (TextMessage)consumer.receive(1000);
 		if(message!=null)
 		{
 			System.out.println("message recieved:"+message);

@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -109,6 +110,20 @@ public class CollaboratorService {
         return Response.status(Response.Status.OK)
                 .entity("Details added to card successfully!")
                 .build();
+    }
+    @Path("receive")
+    @GET
+    public String getMessage()
+    {
+    	String msg=jmsClient.getMessage();
+    	if(msg!=null)
+    	{
+    		return msg;
+    	}
+    	else {
+    		return "Queue is empty";
+    	}
+    	
     }
 
     @Path("moveCard")

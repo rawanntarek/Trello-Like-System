@@ -28,7 +28,6 @@ public class Card {
 	@ManyToOne
 	@JoinColumn(name = "lists_id")
 	private Lists lists;
-
 	private String name;
 	@ManyToOne
 	@JoinColumn(name = "assignee_id")
