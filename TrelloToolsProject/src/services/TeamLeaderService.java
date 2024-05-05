@@ -145,6 +145,27 @@ public class TeamLeaderService {
 
 		    return Response.status(Response.Status.OK).entity(accessibleBoards).build();
 		}
+	@Path("getListsInBoard")
+	@GET
+	public Response getListsInBoard(@QueryParam("boardId") long boardId) {
+	    Board board = entityManager.find(Board.class, boardId);
+	    if (board == null) {
+	        return Response.status(Response.Status.NOT_FOUND).entity("Board not found").build();
+	    }
+
+	    TypedQuery<Lists> query = entityManager.createQuery("SELECT l FROM Lists l WHERE l.board.id = :boardId", Lists.class);
+	    query.setParameter("boardId", boardId);
+	    List<Lists> lists = query.getResultList();
+
+	    List<String> listDetails = new ArrayList<>();
+	    for (Lists list : lists) {
+	        listDetails.add("List Name: " + list.getListName());
+	    }
+
+	    return Response.status(Response.Status.OK).entity(listDetails).build();
+	}
+
+
 	 
 	
 	@Path("invite")
