@@ -110,6 +110,7 @@ public class UserService {
         } catch (NoResultException ex) {
             return Response.status(Response.Status.UNAUTHORIZED).entity("Invalid credentials").build();
         }
+		
         return Response.status(Response.Status.OK).entity("Login successful with role: "+user.getRole()).build();
 
 		
@@ -150,6 +151,11 @@ public class UserService {
 	         return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
 	     }
 
+	     if(!isValidEmail(newEmail))
+		 {
+	            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Email not valid").build();
+ 
+		 }
 	     user.setEmail(newEmail);
 	     entityManager.merge(user);
 
@@ -165,6 +171,11 @@ public class UserService {
 		 {
 	            return Response.status(Response.Status.NOT_FOUND).entity("User not found").build();
 
+		 }
+		 if(!isValidPassword(password))
+		 {
+	            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("password not valid").build();
+ 
 		 }
 		 user.setPassword(password);
 		 entityManager.merge(user);

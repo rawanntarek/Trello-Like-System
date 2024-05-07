@@ -39,27 +39,24 @@ public class SprintService {
 	        return Response.status(Response.Status.NOT_FOUND).entity("Current sprint not found").build();
 	    }
 
-	    // Update the end date of the current sprint
 	    Date currentDate = new Date(System.currentTimeMillis());
 	    currentSprint.setEndDate(currentDate);
 	    entityManager.merge(currentSprint);
 
-	    // Start a new sprint
 	    Sprint newSprint = new Sprint();
 	    newSprint.setName(newSprintName);
-	    newSprint.setStartDate(currentDate); // Start date is the current date
+	    newSprint.setStartDate(currentDate); 
 	    Calendar calendar = Calendar.getInstance();
 	    calendar.setTime(currentDate);
-	    calendar.add(Calendar.DAY_OF_YEAR, sprintDurationDays); // Add the sprint duration to get end date
+	    calendar.add(Calendar.DAY_OF_YEAR, sprintDurationDays); 
 	    Date endDate = (Date) calendar.getTime();
 	    newSprint.setEndDate(endDate);
 	    entityManager.persist(newSprint);
 
-	    // Move unfinished tasks from the current sprint to the new sprint
 	    List<Card> unfinishedTasks = getUnfinishedTasks(currentSprint);
 	    for (Card task : unfinishedTasks) {
 	        task.setSprint(newSprint);
-	        task.setStatus("Pending"); // Set status to "Pending" in the new sprint
+	        task.setStatus("Pending"); 
 	        entityManager.merge(task);
 	    }
 

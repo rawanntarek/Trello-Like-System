@@ -154,6 +154,15 @@ public class CollaboratorService {
         // Update the card's list reference
         card.setLists(targetList);
 
+        String status;
+        if (targetList.getListName().equalsIgnoreCase("done")) {
+            status = "Done";
+        } else if (targetList.getListName().equalsIgnoreCase("in progress")) {
+            status = "In Progress";
+        } else {
+            status = "Todo";
+        }
+        card.setStatus(status);
         // Persist the changes
         entityManager.merge(card);
 

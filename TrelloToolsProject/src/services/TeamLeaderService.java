@@ -64,8 +64,10 @@ public class TeamLeaderService {
 		    	
 		 		board.setBoardName(boardName);
 		 		board.setTeamLeader(teamLeader);
-		 		board.setLists(null);
 		 		entityManager.persist(board);
+		 		createList(board,"todo");
+		 		createList(board,"in progress");
+		 		createList(board,"done");
 		        return Response.status(Response.Status.OK).entity("Board Created successfully!").build();
 
 		    }
@@ -73,6 +75,13 @@ public class TeamLeaderService {
 
 		   
 		
+	        
+	}
+	private void createList(Board board, String listName) {
+	    Lists listEntity = new Lists();
+	    listEntity.setListName(listName);
+	    listEntity.setBoard(board);
+	    entityManager.persist(listEntity);
 	}
 	@Path("createSprint")
 	@POST
